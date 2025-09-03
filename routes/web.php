@@ -51,3 +51,5 @@ Route::prefix('docs')->group(function () {
     Route::get('/api-client', fn() => redirect()->route('docs.api-complete'))->name('docs.api-client.redirect');
     Route::get('/css-structure', fn() => redirect()->route('docs.technical-components'))->name('docs.css-structure.redirect');
 });
+
+// Una ruta random
