@@ -1193,7 +1193,7 @@ public function reviews()
 1. **Crear archivo para práctica con reseñas:**
 
 ```bash
-touch ./practica_reseñas.php
+touch ./práctica_reseñas.php
 ```
 
 2. **Contenido del archivo `practica_reseñas.php`:**
@@ -1204,97 +1204,91 @@ require_once 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use App\Models\Category;
+use App\Models\Review;
 use App\Models\Product;
 use App\Models\Customer;
-use App\Models\Review;
 
-// 1. Crear reseñas para productos
-echo "1. CREANDO RESEÑAS:\n";
+echo "1. Creando Reseñas\n";
 
-$iphone = Product::where('name', 'like', '%iPhone%')->first();
-$laptop = Product::where('name', 'like', '%Laptop%')->first();
+echo "\n1.1. Productos\n";
+$iPhone = Product::where('name', 'like', '%iPhone%')->first();
+$samsung = Product::where('name', 'like', '%Samsung%')->first();
 
-if ($iphone && $laptop) {
-    $reviews = [
-        [
-            'product_id' => $iphone->id,
-            'customer_id' => 1,
-            'rating' => 5,
-            'comment' => 'Excelente producto, muy satisfecho con la compra',
-            'is_verified_purchase' => true,
-            'reviewed_at' => now()
-        ],
-        [
-            'product_id' => $iphone->id,
-            'customer_id' => 2,
-            'rating' => 4,
-            'comment' => 'Buen teléfono, aunque un poco caro',
-            'is_verified_purchase' => true,
-            'reviewed_at' => now()->subDays(2)
-        ],
-        [
-            'product_id' => $laptop->id,
-            'customer_id' => 3,
-            'rating' => 5,
-            'comment' => 'Perfecta para trabajo, muy rápida',
-            'is_verified_purchase' => true,
-            'reviewed_at' => now()->subDays(1)
-        ]
-    ];
+echo $iPhone . "\n";
+echo $samsung . "\n";
 
-    foreach ($reviews as $reviewData) {
-        Review::create($reviewData);
-        echo "Reseña creada para producto ID: {$reviewData['product_id']}\n";
-    }
+echo "\n1.2. Clientes\n";
+
+$john = Customer::where('email', 'jdoe@hotmail.com')->first();
+$martin = Customer::where('email', 'mvarelochoa@hotmail.com')->first();
+
+echo $john . "\n";
+echo $martin . "\n";
+
+echo "\n1.3. Reseñas\n";
+// Forma estándar: crear instancia, asignar relaciones y guardar
+$reseña = Review::firstWhere([
+    'product_id' => $iPhone->id,
+    'customer_id' => $john->id
+]);
+if ($reseña) {
+    $reseña->delete(); // Elimina si ya existe para evitar duplicados en este
 }
 
-echo "\n";
+$reseña = new Review([
+    'rating' => 5,
+    'comment' => 'Excelente producto, muy satisfecho con la compra.'
+]);
+$reseña->product()->associate($iPhone);
+$reseña->customer()->associate($john);
+$reseña->save();
+echo "$reseña\n";
 
-// 3. Consultas complejas con relaciones
-echo "3. CONSULTAS COMPLEJAS:\n";
+// Forma alternativa 1: usando create() con IDs
+$reseña->delete();
+$reseña = Review::create([
+    'rating' => 4,
+    'comment' => 'Buen producto, lo recomiendo.',
+    'product_id' => $iPhone->id,
+    'customer_id' => $john->id
+]);
+echo "$reseña\n";
 
-// SQL: SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id
-$productsWithCategory = Product::with('category')->get();
-foreach ($productsWithCategory->take(3) as $product) {
-    echo "- {$product->name} (Categoría: {$product->category->name})\n";
+// Forma alternativa 2: usando create() con relaciones
+// $reseña->delete();
+$reseña = $iPhone->reviews()->updateOrCreate(
+    [
+        'customer_id' => $john->id,
+        'product_id' => $iPhone->id
+    ],
+    [
+        'rating' => 3,
+        'comment' => 'El producto está bien, pero esperaba más.',
+        'customer_id' => $john->id
+    ]
+);
+
+$iPhone->reviews()->updateOrCreate(
+    [
+        'customer_id' => $martin->id
+    ],
+    [
+        'rating' => 2,
+        'comment' => 'No estoy satisfecho con el producto.'
+    ]
+);
+
+
+echo "\n2. Consultando Reseñas\n";
+// Obtener todas las reseñas de un producto
+$reseñasIphone = $iPhone->reviews;
+echo "Reseñas para {$iPhone->name}:\n";
+foreach ($reseñasIphone as $r) {
+    echo "- $r\n";
 }
 
-echo "\n";
-
-// 4. Top productos por rating
-echo "4. TOP PRODUCTOS POR RATING:\n";
-
-$topProducts = Product::withAvg('reviews', 'rating')
-    ->withCount('reviews')
-    ->whereHas('reviews')
-    ->orderBy('reviews_avg_rating', 'desc')
-    ->get();
-
-foreach ($topProducts as $product) {
-    $avgRating = round($product->reviews_avg_rating, 1);
-    echo "- {$product->name}: {$avgRating}/5 ({$product->reviews_count} reseñas)\n";
-}
-
-echo "\n";
-
-// 5. Clientes más activos
-echo "5. CLIENTES MÁS ACTIVOS:\n";
-
-$activeCustomers = Customer::withCount('reviews')
-    ->whereHas('reviews')
-    ->orderBy('reviews_count', 'desc')
-    ->get();
-
-foreach ($activeCustomers as $customer) {
-    echo "- {$customer->first_name} {$customer->last_name}: {$customer->reviews_count} reseñas\n";
-}
-
-echo "\n=== FIN DEL CASO PRÁCTICO ===\n";
+echo "Promedio de calificaciones para {$iPhone->name}: " . $iPhone->averageRating() . "\n";
 ```
-
----
-
 ## Ejercicios para Practicar
 
 ### Ejercicio 1: Ampliar el modelo Customer
@@ -1365,7 +1359,4 @@ Model::where('field', 'value')->get()
 
 ### Próximos Pasos
 1. Estudiar Relaciones entre Modelos (ver tutorial específico)
-2. Aprender Seeders y Factory (ver tutorial específico) 
-3. Implementar Observers para eventos de modelo
-4. Explorar Query Scopes para consultas reutilizables
-5. Practicar con consultas avanzadas y optimización
+2. Aprender Seeders y Factory (ver tutorial específico)
