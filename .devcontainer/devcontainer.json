@@ -6,11 +6,13 @@
     ],
     "postCreateCommand": [
         "composer install",
-        "cp .env.example .env",
-        "php artisan key:generate",
+        "cp .env.example .env || true",
+        "php artisan key:generate --force",
         "php artisan migrate --seed --force",
-        "ln -s /workspaces/microservicios-api/migrate.sh /usr/local/bin/migrate"
+        "php artisan storage:link || true",
+        "chmod -R 775 storage bootstrap/cache"
     ],
+    "postStartCommand": "bash /workspaces/microservicios-api/.devcontainer/init.sh",
     "customizations": {
         "vscode": {
             "settings": {
