@@ -1,10 +1,9 @@
-# Laravel: Almacenamiento de Datos - Taller de 3.5 Horas
+# Laravel: Almacenamiento de Datos
 
 ## Información del Taller
 
-**Duración:** 3.5 horas  
 **Nivel:** Principiante  
-**Requisitos previos:** Conocimientos básicos de PHP y SQL  
+**Requisitos previos:** Conocimientos básicos de POO, PHP y SQL  
 
 ## Objetivos de Aprendizaje
 
@@ -16,30 +15,10 @@ Al finalizar este taller, los estudiantes serán capaces de:
 - Gestionar relaciones entre tablas
 - Aplicar buenas prácticas en el manejo de datos
 
----
-
-## Agenda del Taller
-
-### Bloque 1: Fundamentos
+## Bloque 1: Fundamentos
 - Introducción al ORM Eloquent
 - Configuración inicial y creación de rama de trabajo
 - Migraciones básicas
-
-### Bloque 2: Modelos y Datos
-- Creación de modelos
-- Operaciones CRUD básicas
-- Métodos Eloquent fundamentales
-
-### Descanso
-
-### Bloque 3: Práctica Avanzada
-- Mapeo SQL a Eloquent
-- Modificación de tablas
-- Casos prácticos complejos
-
----
-
-## Bloque 1: Fundamentos
 
 ### 1.1 Preparación del Ambiente de Trabajo
 
@@ -308,6 +287,9 @@ return new class extends Migration
 ---
 
 ## Bloque 2: Modelos y Datos
+- Creación de modelos
+- Operaciones CRUD básicas
+- Métodos Eloquent fundamentales
 
 ### 2.1 Introducción a los Modelos Eloquent
 
@@ -677,52 +659,10 @@ echo "=== FIN DE LA PRÁCTICA ===\n";
 php practica_eloquent_methods.php
 ```
 
-**Resultados esperados del script:**
-- Demostración práctica de cada método Eloquent
-- Ejemplos de diferentes tipos de búsquedas
-- Comparación entre métodos de creación
-- Listado final de todas las categorías creadas
-
-#### Ejemplo de salida esperada:
-
-```
-=== PRÁCTICA DE MÉTODOS ELOQUENT CON CATEGORY ===
-
-1. MÉTODO CREATE:
-✓ Categoría creada con create(): Libros (ID: 10)
-
-2. MÉTODO FIND:
-✓ Categoría encontrada: Libros - libros
-✓ Encontradas 3 categorías por ID
-
-3. MÉTODO WHERE:
-✓ Categoría encontrada por slug: Libros
-✓ Categorías activas encontradas: 5
-✓ Categorías que contienen 'electrón': 2
-
-4. MÉTODO FIRSTORCREATE:
-✓ firstOrCreate con slug existente: Libros (no se creó nueva)
-✓ Nueva categoría creada: Música
-
-5. MÉTODO UPDATEORCREATE:
-✓ updateOrCreate en categoría existente: Música y Audio
-✓ Nueva categoría con updateOrCreate: Jardinería
-
-6. MÉTODO SAVE:
-✓ Categoría creada con save(): Arte y Manualidades (ID: 11)
-✓ Categoría actualizada con save(): nueva descripción guardada
-
-7. RESUMEN FINAL
-1. Jardinería (jardineria) - #28a745 - Color: #28a745 hace 5 minutos
-2. Música (musica) - #fd7e14 - Color: #fd7e14 hace 10 minutos
-3. Libros (libros) - #6f42c1 - Color: #6f42c1 hace 15 minutos
-4. Electrónicos (electronicos) - #007bff - Color: #007bff hace 20 minutos
-5. Ropa y Accesorios (ropa-accesorios) - #28a745 - Color: #28a745 hace 25 minutos
-=== TOTAL DE CATEGORÍAS: 5 ===
-=== FIN DE LA PRÁCTICA ===
-```
-
 ## Bloque 3: Práctica Avanzada
+- Mapeo SQL a Eloquent
+- Modificación de tablas
+- Casos prácticos complejos
 
 ### 3.1 Mapeo SQL a Eloquent
 
@@ -1028,11 +968,54 @@ class Product extends Model
 php insert_products.php
 ```
 
-### 3.3 Caso Práctico Complejo
+5. **Agregar Customers de prueba:**
+
+```bash
+touch ./insert_customers.php
+```
+
+```php
+<?php
+require_once 'vendor/autoload.php';
+$app = require_once 'bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+use App\Models\Customer;
+
+$clientes = [
+    [
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'jdoe@hotmail.com',
+    ],
+    [
+        'first_name' => 'Jane',
+        'last_name' => 'Smith',
+        'email' => 'jsmith@hotmail.com',
+    ],
+];
+
+foreach ($clientes as $infoCliente) {
+    $email = $infoCliente['email'];
+    Customer::updateOrCreate(
+        ['email' => $email], // Condición de búsqueda
+        $infoCliente
+    );
+}
+
+$listado = Customer::all();
+foreach ($listado as $customer) {
+    echo "{$customer->id}. {$customer->first_name}, {$customer->last_name} - {$customer->email}\n";
+}
+
+echo "\n\nTotal customers: " . $listado->count() . "\n";
+```
+
+### 3.3 Caso Práctico: Reseñas de Productos
 
 Vamos a crear un sistema más complejo con **reseñas de productos**:
 
-#### Crear la migración y modelo para reviews:
+#### Crear la migración y modelo para reseñas:
 
 ```bash
 # Crear migración y modelo
@@ -1040,7 +1023,7 @@ php artisan make:model Review -m
 ```
 >**Nota**: El parámetro `-m` instruye a artisan a crear tanto el modelo como su migración.
 
-**Diagrama del modelo final completo con reviews:**
+**Diagrama del modelo final completo con reseñas:**
 
 ```mermaid
 erDiagram
@@ -1205,8 +1188,15 @@ public function reviews()
 }
 ```
 
-#### Archivo de práctica avanzada:
+#### Archivo de práctica con reseñas y consultas:
 
+1. **Crear archivo para práctica con reseñas:**
+
+```bash
+touch ./practica_reseñas.php
+```
+
+2. **Contenido del archivo `practica_reseñas.php`:**
 ```php
 <?php
 
@@ -1219,44 +1209,8 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Review;
 
-echo "=== CASO PRÁCTICO AVANZADO ===\n\n";
-
-// 1. Crear algunos clientes de prueba
-echo "1. CREANDO CLIENTES DE PRUEBA:\n";
-
-$customers = [
-    [
-        'first_name' => 'Juan',
-        'last_name' => 'Pérez',
-        'email' => 'juan.perez@email.com',
-        'phone' => '+1234567890',
-        'is_premium' => false
-    ],
-    [
-        'first_name' => 'María',
-        'last_name' => 'González',
-        'email' => 'maria.gonzalez@email.com',
-        'phone' => '+1234567891',
-        'is_premium' => true
-    ],
-    [
-        'first_name' => 'Carlos',
-        'last_name' => 'Rodríguez',
-        'email' => 'carlos.rodriguez@email.com',
-        'phone' => '+1234567892',
-        'is_premium' => false
-    ]
-];
-
-foreach ($customers as $customerData) {
-    $customer = Customer::create($customerData);
-    echo "Cliente creado: {$customer->first_name} {$customer->last_name}\n";
-}
-
-echo "\n";
-
-// 2. Crear reseñas para productos
-echo "2. CREANDO RESEÑAS:\n";
+// 1. Crear reseñas para productos
+echo "1. CREANDO RESEÑAS:\n";
 
 $iphone = Product::where('name', 'like', '%iPhone%')->first();
 $laptop = Product::where('name', 'like', '%Laptop%')->first();
@@ -1384,58 +1338,6 @@ Implementar sistema de búsquedas complejas:
 
 ---
 
-## Resumen del Taller
-
-### Conceptos Aprendidos
-
-1. **Migraciones**:
-   - Crear y ejecutar migraciones
-   - Modificar tablas existentes
-   - Rollback de migraciones
-   - Buenas prácticas
-
-2. **Modelos Eloquent**:
-   - Creación de modelos
-   - Configuración de fillable y casts
-   - Operaciones CRUD básicas
-   - Métodos fundamentales (create, find, where, save, etc.)
-
-3. **Mapeo SQL ↔ Eloquent**:
-   - Conversión de consultas SQL comunes
-   - Uso de Query Builder
-   - Consultas básicas y filtrados
-   - Agregaciones simples
-
-4. **Modificación de Esquemas**:
-   - Agregar campos a tablas existentes
-   - Modificar tipos de datos
-   - Crear índices para optimización
-   - Gestionar cambios en producción
-
-### Mejores Prácticas Aprendidas
-
-1. **Nombramiento**:
-   - Tablas en plural, modelos en singular
-   - Snake_case para campos de BD
-   - CamelCase para métodos y propiedades
-
-2. **Migraciones**:
-   - Una migración por cambio
-   - Siempre incluir método down()
-   - Usar foreign keys apropiadamente
-
-3. **Modelos**:
-   - Definir fillable correctamente
-   - Usar casts para tipos de datos
-   - Implementar relaciones claramente
-
-4. **Performance**:
-   - Usar eager loading para evitar N+1
-   - Crear índices apropiados
-   - Limitar resultados cuando sea necesario
-
-## Recursos Adicionales
-
 ### Documentación Oficial
 - [Laravel Migrations](https://laravel.com/docs/migrations)
 - [Eloquent ORM](https://laravel.com/docs/eloquent)
@@ -1467,7 +1369,3 @@ Model::where('field', 'value')->get()
 3. Implementar Observers para eventos de modelo
 4. Explorar Query Scopes para consultas reutilizables
 5. Practicar con consultas avanzadas y optimización
-
----
-> **Nota**: ESTO ES DE PRUEBA Y SE BORRARÁ!
----
