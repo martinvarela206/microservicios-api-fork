@@ -845,6 +845,12 @@ return new class extends Migration
 };
 ```
 
+#### Volver a ejecutar migraciones
+
+Hay que volver a ejecutar las migraciones, para que tome los cambios del añadido de imagen a productos y del indice optimizado.
+
+`php artisan migrate`
+
 #### Insertar productos de prueba a la tabla products
 El siguiente código inserta productos de prueba en la tabla `products` sin utilizar seeders:
 
@@ -1009,6 +1015,39 @@ foreach ($listado as $customer) {
 }
 
 echo "\n\nTotal customers: " . $listado->count() . "\n";
+```
+
+> [!WARNING]
+> Hay que modificar el modelo de customers para que no de error la inserción masiva de registros.
+> Fue propuesto como practica en la clase.
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Customer extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'birth_date',
+        'is_premium',
+    ];
+
+    protected $dates=['birth_date', 'created_at', 'updated_at'];
+
+    protected $casts = [
+        'is_premium' => 'boolean',
+    ];
+}
 ```
 
 ### 3.3 Caso Práctico: Reseñas de Productos
