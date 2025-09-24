@@ -845,12 +845,8 @@ return new class extends Migration
 };
 ```
 
-#### Volver a ejecutar migraciones
-
-> [!INFO]
-> Esto no esta en el orginal.
-
-Hay que volver a ejecutar las migraciones, para que tome los cambios del añadido de imagen a productos y del indice optimizado.
+> [!WARNING]
+> Hay que volver a ejecutar las migraciones, para que tome los cambios del añadido de imagen a productos y del indice optimizado.
 
 `php artisan migrate`
 
@@ -1346,6 +1342,10 @@ foreach ($reseñasIphone as $r) {
 
 echo "Promedio de calificaciones para {$iPhone->name}: " . $iPhone->averageRating() . "\n";
 ```
+
+> [!WARNING]
+> Se añadio la actualización de la fecha de reviewed_at, la cual no es gestionada automaticamente como si lo hacen updated_at y created_at.
+
 ## Ejercicios para Practicar
 
 ### Ejercicio 1: Ampliar el modelo Customer
