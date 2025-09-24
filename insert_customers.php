@@ -16,6 +16,16 @@ $clientes = [
         'last_name' => 'Smith',
         'email' => 'jsmith@hotmail.com',
     ],
+    [
+        'first_name' => 'Maru',
+        'last_name' => 'Scheffer',
+        'email' => 'mscheffer@hotmail.com',
+    ],
+    [
+        'first_name' => 'Martin',
+        'last_name' => 'Varela',
+        'email' => 'mvarelochoa@hotmail.com',
+    ],
 ];
 
 foreach ($clientes as $infoCliente) {

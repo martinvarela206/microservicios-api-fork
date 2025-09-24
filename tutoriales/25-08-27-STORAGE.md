@@ -847,6 +847,9 @@ return new class extends Migration
 
 #### Volver a ejecutar migraciones
 
+> [!INFO]
+> Esto no esta en el orginal.
+
 Hay que volver a ejecutar las migraciones, para que tome los cambios del añadido de imagen a productos y del indice optimizado.
 
 `php artisan migrate`
@@ -998,6 +1001,16 @@ $clientes = [
         'first_name' => 'Jane',
         'last_name' => 'Smith',
         'email' => 'jsmith@hotmail.com',
+    ],
+    [
+        'first_name' => 'Maru',
+        'last_name' => 'Scheffer',
+        'email' => 'mscheffer@hotmail.com',
+    ],
+    [
+        'first_name' => 'Martin',
+        'last_name' => 'Varela',
+        'email' => 'mvarelochoa@hotmail.com',
     ],
 ];
 
@@ -1246,6 +1259,7 @@ $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 use App\Models\Review;
 use App\Models\Product;
 use App\Models\Customer;
+use Carbon\Carbon;
 
 echo "1. Creando Reseñas\n";
 
@@ -1268,7 +1282,8 @@ echo "\n1.3. Reseñas\n";
 // Forma estándar: crear instancia, asignar relaciones y guardar
 $reseña = Review::firstWhere([
     'product_id' => $iPhone->id,
-    'customer_id' => $john->id
+    'customer_id' => $john->id,
+    'reviewed_at' => Carbon::now()
 ]);
 if ($reseña) {
     $reseña->delete(); // Elimina si ya existe para evitar duplicados en este
@@ -1289,7 +1304,8 @@ $reseña = Review::create([
     'rating' => 4,
     'comment' => 'Buen producto, lo recomiendo.',
     'product_id' => $iPhone->id,
-    'customer_id' => $john->id
+    'customer_id' => $john->id,
+    'reviewed_at' => Carbon::now()
 ]);
 echo "$reseña\n";
 
@@ -1303,7 +1319,8 @@ $reseña = $iPhone->reviews()->updateOrCreate(
     [
         'rating' => 3,
         'comment' => 'El producto está bien, pero esperaba más.',
-        'customer_id' => $john->id
+        'customer_id' => $john->id,
+        'reviewed_at' => Carbon::now()
     ]
 );
 
@@ -1313,7 +1330,8 @@ $iPhone->reviews()->updateOrCreate(
     ],
     [
         'rating' => 2,
-        'comment' => 'No estoy satisfecho con el producto.'
+        'comment' => 'No estoy satisfecho con el producto.',
+        'reviewed_at' => Carbon::now()
     ]
 );
 

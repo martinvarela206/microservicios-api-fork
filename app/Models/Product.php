@@ -31,20 +31,29 @@ class Product extends Model
     }
 
     // Agregar al modelo Product
-public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 
-// Método para calcular rating promedio
-public function averageRating()
-{
-    return $this->reviews()->avg('rating');
-}
+    // Método para calcular rating promedio
+    public function averageRating()
+    {
+        return $this->reviews()->avg('rating');
+    }
 
-// Método para contar reseñas
-public function reviewsCount()
-{
-    return $this->reviews()->count();
-}
+    // Método para contar reseñas
+    public function reviewsCount()
+    {
+        return $this->reviews()->count();
+    }
+
+    public function __toString()
+    {
+        return json_encode([
+            'id' => $this->id,
+            'name' => $this->name,
+            'price' => $this->price
+        ]);
+    }
 }

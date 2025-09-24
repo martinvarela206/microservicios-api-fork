@@ -33,4 +33,15 @@ class Review extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function __toString()
+    {
+        return json_encode([
+            'id' => $this->id,
+            'product_id' => $this->product_id,
+            'customer_id' => $this->customer_id,
+            'rating' => $this->rating,
+            'comment' => $this->comment
+        ]);
+    }
 }
