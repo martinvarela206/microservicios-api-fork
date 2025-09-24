@@ -1201,8 +1201,22 @@ class Review extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function __toString()
+    {
+        return json_encode([
+            'id' => $this->id,
+            'product_id' => $this->product_id,
+            'customer_id' => $this->customer_id,
+            'rating' => $this->rating,
+            'comment' => $this->comment
+        ]);
+    }
 }
 ```
+
+> [!WARNING]
+> Se añadio el método __toString() para evitar errores al usar echo con los objetos Review.
 
 **Actualizar modelo Product para incluir relación con reviews:**
 
@@ -1224,7 +1238,19 @@ public function reviewsCount()
 {
     return $this->reviews()->count();
 }
+
+public function __toString()
+{
+    return json_encode([
+        'id' => $this->id,
+        'name' => $this->name,
+        'price' => $this->price
+    ]);
+}
 ```
+
+> [!WARNING]
+> Se añadio el método __toString() para evitar errores al usar echo con los objetos Product.
 
 **Actualizar modelo Customer:**
 
